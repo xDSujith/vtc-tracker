@@ -4,7 +4,10 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
+import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
+import { LoadingProvider } from "@/components/loading-provider"
 
 export const metadata: Metadata = {
   title: "Trucky++ VTC Tracker",
@@ -46,8 +49,18 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192.jpg" />
       </head>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={null}>{children}</Suspense>
-        <Analytics />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <LoadingProvider>
+            <Suspense fallback={null}>{children}</Suspense>
+            <Analytics />
+            <Toaster />
+          </LoadingProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
