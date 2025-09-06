@@ -64,6 +64,7 @@ export default function LoginPage() {
         <CardContent>
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           <div className="grid gap-4">
+            <div style={{ height: '5rem' }} />
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
