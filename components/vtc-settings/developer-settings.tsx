@@ -16,6 +16,13 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   Code,
   Webhook,
   Database,
@@ -28,7 +35,9 @@ import {
   Save,
   AlertTriangle,
 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui/use-toast"
+
+type SettingsCategory = "api" | "webhooks" | "logging"
 
 export function DeveloperSettings() {
   const { toast } = useToast()
@@ -88,7 +97,11 @@ export function DeveloperSettings() {
     },
   ]
 
-  const updateSetting = (category, setting, value) => {
+  const updateSetting = (
+    category: SettingsCategory,
+    setting: string,
+    value: string | number | boolean
+  ) => {
     setSettings(prev => ({
       ...prev,
       [category]: {
@@ -436,18 +449,22 @@ export function DeveloperSettings() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Log Level</Label>
-                <select
-                  className="w-full p-2 rounded-md border border-border bg-background"
+                <Select
                   value={settings.logging.level}
-                  onChange={e =>
-                    updateSetting("logging", "level", e.target.value)
+                  onValueChange={value =>
+                    updateSetting("logging", "level", value)
                   }
                 >
-                  <option value="error">Error</option>
-                  <option value="warn">Warning</option>
-                  <option value="info">Info</option>
-                  <option value="debug">Debug</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select log level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="error">Error</SelectItem>
+                    <SelectItem value="warn">Warning</SelectItem>
+                    <SelectItem value="info">Info</SelectItem>
+                    <SelectItem value="debug">Debug</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex items-center justify-between">
                 <div>

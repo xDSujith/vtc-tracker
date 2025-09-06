@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import { Palette, Eye, Monitor } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui/use-toast"
 
 const brandingSettingsSchema = z.object({
   primaryColor: z.string(),
@@ -30,10 +30,6 @@ const brandingSettingsSchema = z.object({
 
 type BrandingSettingsForm = z.infer<typeof brandingSettingsSchema>
 
-interface BrandingSettingsProps {
-  vtcId: string
-}
-
 const fontOptions = [
   { value: "inter", label: "Inter" },
   { value: "roboto", label: "Roboto" },
@@ -49,7 +45,7 @@ const layoutOptions = [
   { value: "compact", label: "Compact" },
 ]
 
-export function BrandingSettings({ vtcId }: BrandingSettingsProps) {
+export function BrandingSettings() {
   const { toast } = useToast()
   const [previewMode, setPreviewMode] = useState<"light" | "dark">("dark")
 
