@@ -10,11 +10,13 @@ TRUNCATE TABLE
     "public"."audit_logs",
     "public"."job_legs",
     "public"."jobs",
-    "public"."telemetry",
+    "public"."telemetry_data", -- Corrected table name
     "public"."user_roles",
     "public"."users",
     "public"."vehicles",
-    "public"."roles"
+    "public"."roles",
+    "public"."drivers", -- Added missing table
+    "public"."trucks" -- Added missing table
 RESTART IDENTITY CASCADE;
 
 -- Re-enable triggers after truncation is complete.
@@ -47,4 +49,3 @@ BEGIN
 END $$;
 
 COMMIT;
-
