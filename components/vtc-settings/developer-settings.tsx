@@ -1,7 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
@@ -22,8 +28,10 @@ import {
   Save,
   AlertTriangle,
 } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 export function DeveloperSettings() {
+  const { toast } = useToast()
   const [settings, setSettings] = useState({
     api: {
       enabled: true,
@@ -64,16 +72,24 @@ export function DeveloperSettings() {
   ])
 
   const apiEndpoints = [
-    { method: "GET", path: "/api/v1/vtc/stats", description: "Get VTC statistics" },
+    {
+      method: "GET",
+      path: "/api/v1/vtc/stats",
+      description: "Get VTC statistics",
+    },
     { method: "GET", path: "/api/v1/jobs", description: "List all jobs" },
     { method: "POST", path: "/api/v1/jobs", description: "Create new job" },
     { method: "GET", path: "/api/v1/drivers", description: "List all drivers" },
     { method: "GET", path: "/api/v1/fleet", description: "Get fleet information" },
-    { method: "POST", path: "/api/v1/telemetry", description: "Submit telemetry data" },
+    {
+      method: "POST",
+      path: "/api/v1/telemetry",
+      description: "Submit telemetry data",
+    },
   ]
 
-  const updateSetting = (category: string, setting: string, value: any) => {
-    setSettings((prev) => ({
+  const updateSetting = (category, setting, value) => {
+    setSettings(prev => ({
       ...prev,
       [category]: {
         ...prev[category],
@@ -82,17 +98,37 @@ export function DeveloperSettings() {
     }))
   }
 
+  const handleSaveSettings = () => {
+    console.log("Saving settings:", settings)
+    toast({
+      title: "Settings Saved",
+      description: "Your developer settings have been successfully updated.",
+    })
+  }
+
+  const handleFeatureClick = (featureName: string) => {
+    toast({
+      title: "Feature Not Implemented",
+      description: `${featureName} is not yet available.`,
+    })
+  }
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h3 className="text-2xl font-bold text-foreground">Developer Settings</h3>
-        <p className="text-muted-foreground">API configuration, webhooks, and development tools</p>
+        <h3 className="text-2xl font-bold text-foreground">
+          Developer Settings
+        </h3>
+        <p className="text-muted-foreground">
+          API configuration, webhooks, and development tools
+        </p>
       </div>
 
       <Alert className="glass border-yellow-500/20">
         <AlertTriangle className="h-4 w-4 text-yellow-500" />
         <AlertDescription>
-          Developer settings are for advanced users. Incorrect configuration may affect system functionality.
+          Developer settings are for advanced users. Incorrect configuration may
+          affect system functionality.
         </AlertDescription>
       </Alert>
 
@@ -113,7 +149,9 @@ export function DeveloperSettings() {
                 </div>
                 <div>
                   <CardTitle>API Settings</CardTitle>
-                  <CardDescription>Configure API access and behavior</CardDescription>
+                  <CardDescription>
+                    Configure API access and behavior
+                  </CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -121,11 +159,15 @@ export function DeveloperSettings() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Enable API</Label>
-                  <p className="text-sm text-muted-foreground">Allow external API access</p>
+                  <p className="text-sm text-muted-foreground">
+                    Allow external API access
+                  </p>
                 </div>
                 <Switch
                   checked={settings.api.enabled}
-                  onCheckedChange={(checked) => updateSetting("api", "enabled", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("api", "enabled", checked)
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -133,31 +175,43 @@ export function DeveloperSettings() {
                 <Input
                   type="number"
                   value={settings.api.rateLimit}
-                  onChange={(e) => updateSetting("api", "rateLimit", Number.parseInt(e.target.value))}
+                  onChange={e =>
+                    updateSetting("api", "rateLimit", parseInt(e.target.value))
+                  }
                   className="w-32"
                   disabled={!settings.api.enabled}
                 />
-                <p className="text-sm text-muted-foreground">Maximum API requests per hour per key</p>
+                <p className="text-sm text-muted-foreground">
+                  Maximum API requests per hour per key
+                </p>
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Debug Mode</Label>
-                  <p className="text-sm text-muted-foreground">Include debug information in responses</p>
+                  <p className="text-sm text-muted-foreground">
+                    Include debug information in responses
+                  </p>
                 </div>
                 <Switch
                   checked={settings.api.debugMode}
-                  onCheckedChange={(checked) => updateSetting("api", "debugMode", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("api", "debugMode", checked)
+                  }
                   disabled={!settings.api.enabled}
                 />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label>CORS Enabled</Label>
-                  <p className="text-sm text-muted-foreground">Allow cross-origin requests</p>
+                  <p className="text-sm text-muted-foreground">
+                    Allow cross-origin requests
+                  </p>
                 </div>
                 <Switch
                   checked={settings.api.cors}
-                  onCheckedChange={(checked) => updateSetting("api", "cors", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("api", "cors", checked)
+                  }
                   disabled={!settings.api.enabled}
                 />
               </div>
@@ -167,30 +221,60 @@ export function DeveloperSettings() {
           <Card className="glass hover-lift">
             <CardHeader>
               <CardTitle>API Endpoints</CardTitle>
-              <CardDescription>Available API endpoints and documentation</CardDescription>
+              <CardDescription>
+                Available API endpoints and documentation
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {apiEndpoints.map((endpoint, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-border">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 rounded-lg border border-border"
+                  >
                     <div className="flex items-center gap-3">
-                      <Badge variant={endpoint.method === "GET" ? "secondary" : "default"} className="font-mono">
+                      <Badge
+                        variant={
+                          endpoint.method === "GET" ? "secondary" : "default"
+                        }
+                        className="font-mono"
+                      >
                         {endpoint.method}
                       </Badge>
                       <code className="text-sm font-mono">{endpoint.path}</code>
-                      <span className="text-sm text-muted-foreground">{endpoint.description}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {endpoint.description}
+                      </span>
                     </div>
-                    <Button variant="ghost" size="sm" className="hover-lift">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="hover-lift"
+                      onClick={() => {
+                        navigator.clipboard.writeText(endpoint.path)
+                        toast({
+                          title: "Copied to Clipboard",
+                          description: "API endpoint path has been copied.",
+                        })
+                      }}
+                    >
                       <Copy className="h-4 w-4" />
                     </Button>
                   </div>
                 ))}
               </div>
               <div className="mt-4 pt-4 border-t border-border">
-                <Button variant="outline" className="hover-lift bg-transparent">
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  View Full Documentation
-                </Button>
+                <a
+                  href="/docs/api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                >
+                  <Button variant="outline" className="hover-lift bg-transparent">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    View Full Documentation
+                  </Button>
+                </a>
               </div>
             </CardContent>
           </Card>
@@ -200,9 +284,14 @@ export function DeveloperSettings() {
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-lg font-semibold">Webhooks</h4>
-              <p className="text-sm text-muted-foreground">Configure webhooks for real-time event notifications</p>
+              <p className="text-sm text-muted-foreground">
+                Configure webhooks for real-time event notifications
+              </p>
             </div>
-            <Button className="gradient-border hover-lift">
+            <Button
+              className="gradient-border hover-lift"
+              onClick={() => handleFeatureClick("Add Webhook")}
+            >
               <Webhook className="h-4 w-4 mr-2" />
               Add Webhook
             </Button>
@@ -217,11 +306,15 @@ export function DeveloperSettings() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Enable Webhooks</Label>
-                  <p className="text-sm text-muted-foreground">Allow webhook notifications</p>
+                  <p className="text-sm text-muted-foreground">
+                    Allow webhook notifications
+                  </p>
                 </div>
                 <Switch
                   checked={settings.webhooks.enabled}
-                  onCheckedChange={(checked) => updateSetting("webhooks", "enabled", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("webhooks", "enabled", checked)
+                  }
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -230,7 +323,13 @@ export function DeveloperSettings() {
                   <Input
                     type="number"
                     value={settings.webhooks.retryAttempts}
-                    onChange={(e) => updateSetting("webhooks", "retryAttempts", Number.parseInt(e.target.value))}
+                    onChange={e =>
+                      updateSetting(
+                        "webhooks",
+                        "retryAttempts",
+                        parseInt(e.target.value)
+                      )
+                    }
                     disabled={!settings.webhooks.enabled}
                   />
                 </div>
@@ -239,7 +338,13 @@ export function DeveloperSettings() {
                   <Input
                     type="number"
                     value={settings.webhooks.timeout}
-                    onChange={(e) => updateSetting("webhooks", "timeout", Number.parseInt(e.target.value))}
+                    onChange={e =>
+                      updateSetting(
+                        "webhooks",
+                        "timeout",
+                        parseInt(e.target.value)
+                      )
+                    }
                     disabled={!settings.webhooks.enabled}
                   />
                 </div>
@@ -248,32 +353,61 @@ export function DeveloperSettings() {
           </Card>
 
           <div className="grid gap-4">
-            {webhooks.map((webhook) => (
+            {webhooks.map(webhook => (
               <Card key={webhook.id} className="glass hover-lift">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium">{webhook.name}</h4>
-                        <Badge variant={webhook.status === "active" ? "default" : "secondary"}>{webhook.status}</Badge>
+                        <Badge
+                          variant={
+                            webhook.status === "active"
+                              ? "default"
+                              : "secondary"
+                          }
+                        >
+                          {webhook.status}
+                        </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground font-mono">{webhook.url}</p>
+                      <p className="text-sm text-muted-foreground font-mono">
+                        {webhook.url}
+                      </p>
                       <div className="flex flex-wrap gap-1 mt-2">
-                        {webhook.events.map((event) => (
-                          <Badge key={event} variant="outline" className="text-xs">
+                        {webhook.events.map(event => (
+                          <Badge
+                            key={event}
+                            variant="outline"
+                            className="text-xs"
+                          >
                             {event}
                           </Badge>
                         ))}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Last triggered: {new Date(webhook.lastTriggered).toLocaleString()}
+                        Last triggered:{" "}
+                        {new Date(webhook.lastTriggered).toLocaleString()}
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="hover-lift bg-transparent">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="hover-lift bg-transparent"
+                        onClick={() =>
+                          handleFeatureClick("Test Webhook")
+                        }
+                      >
                         <TestTube className="h-4 w-4" />
                       </Button>
-                      <Button variant="outline" size="sm" className="hover-lift bg-transparent">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="hover-lift bg-transparent"
+                        onClick={() =>
+                          handleFeatureClick("Refresh Webhook")
+                        }
+                      >
                         <RefreshCw className="h-4 w-4" />
                       </Button>
                     </div>
@@ -293,7 +427,9 @@ export function DeveloperSettings() {
                 </div>
                 <div>
                   <CardTitle>Logging Configuration</CardTitle>
-                  <CardDescription>Configure system logging and debugging</CardDescription>
+                  <CardDescription>
+                    Configure system logging and debugging
+                  </CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -303,7 +439,9 @@ export function DeveloperSettings() {
                 <select
                   className="w-full p-2 rounded-md border border-border bg-background"
                   value={settings.logging.level}
-                  onChange={(e) => updateSetting("logging", "level", e.target.value)}
+                  onChange={e =>
+                    updateSetting("logging", "level", e.target.value)
+                  }
                 >
                   <option value="error">Error</option>
                   <option value="warn">Warning</option>
@@ -314,31 +452,43 @@ export function DeveloperSettings() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Log API Calls</Label>
-                  <p className="text-sm text-muted-foreground">Record all API requests and responses</p>
+                  <p className="text-sm text-muted-foreground">
+                    Record all API requests and responses
+                  </p>
                 </div>
                 <Switch
                   checked={settings.logging.apiCalls}
-                  onCheckedChange={(checked) => updateSetting("logging", "apiCalls", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("logging", "apiCalls", checked)
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Log Errors</Label>
-                  <p className="text-sm text-muted-foreground">Record application errors and exceptions</p>
+                  <p className="text-sm text-muted-foreground">
+                    Record application errors and exceptions
+                  </p>
                 </div>
                 <Switch
                   checked={settings.logging.errors}
-                  onCheckedChange={(checked) => updateSetting("logging", "errors", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("logging", "errors", checked)
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Performance Logging</Label>
-                  <p className="text-sm text-muted-foreground">Track performance metrics and timing</p>
+                  <p className="text-sm text-muted-foreground">
+                    Track performance metrics and timing
+                  </p>
                 </div>
                 <Switch
                   checked={settings.logging.performance}
-                  onCheckedChange={(checked) => updateSetting("logging", "performance", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("logging", "performance", checked)
+                  }
                 />
               </div>
             </CardContent>
@@ -349,23 +499,41 @@ export function DeveloperSettings() {
           <Card className="glass hover-lift">
             <CardHeader>
               <CardTitle>Testing Tools</CardTitle>
-              <CardDescription>Tools for testing and debugging your VTC system</CardDescription>
+              <CardDescription>
+                Tools for testing and debugging your VTC system
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="hover-lift bg-transparent">
+                <Button
+                  variant="outline"
+                  className="hover-lift bg-transparent"
+                  onClick={() => handleFeatureClick("Test API Endpoints")}
+                >
                   <TestTube className="h-4 w-4 mr-2" />
                   Test API Endpoints
                 </Button>
-                <Button variant="outline" className="hover-lift bg-transparent">
+                <Button
+                  variant="outline"
+                  className="hover-lift bg-transparent"
+                  onClick={() => handleFeatureClick("Test Webhooks")}
+                >
                   <Webhook className="h-4 w-4 mr-2" />
                   Test Webhooks
                 </Button>
-                <Button variant="outline" className="hover-lift bg-transparent">
+                <Button
+                  variant="outline"
+                  className="hover-lift bg-transparent"
+                  onClick={() => handleFeatureClick("Database Health Check")}
+                >
                   <Database className="h-4 w-4 mr-2" />
                   Database Health Check
                 </Button>
-                <Button variant="outline" className="hover-lift bg-transparent">
+                <Button
+                  variant="outline"
+                  className="hover-lift bg-transparent"
+                  onClick={() => handleFeatureClick("Performance Test")}
+                >
                   <Zap className="h-4 w-4 mr-2" />
                   Performance Test
                 </Button>
@@ -376,7 +544,9 @@ export function DeveloperSettings() {
           <Card className="glass hover-lift">
             <CardHeader>
               <CardTitle>System Information</CardTitle>
-              <CardDescription>Current system status and configuration</CardDescription>
+              <CardDescription>
+                Current system status and configuration
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-4 text-sm">
@@ -385,7 +555,9 @@ export function DeveloperSettings() {
                   <p className="font-mono">v1.2.3</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Database Version</Label>
+                  <Label className="text-muted-foreground">
+                    Database Version
+                  </Label>
                   <p className="font-mono">PostgreSQL 15.4</p>
                 </div>
                 <div>
@@ -403,10 +575,17 @@ export function DeveloperSettings() {
       </Tabs>
 
       <div className="flex justify-end gap-2">
-        <Button variant="outline" className="hover-lift bg-transparent">
+        <Button
+          variant="outline"
+          className="hover-lift bg-transparent"
+          onClick={() => handleFeatureClick("Cancel")}
+        >
           Cancel
         </Button>
-        <Button className="gradient-border hover-lift">
+        <Button
+          className="gradient-border hover-lift"
+          onClick={handleSaveSettings}
+        >
           <Save className="h-4 w-4 mr-2" />
           Save Settings
         </Button>

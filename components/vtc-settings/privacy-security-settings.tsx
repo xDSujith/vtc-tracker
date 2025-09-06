@@ -1,7 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
@@ -9,9 +15,22 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Shield, Lock, Eye, Key, UserCheck, AlertTriangle, Download, Trash2, RefreshCw, Save } from "lucide-react"
+import {
+  Shield,
+  Lock,
+  Eye,
+  Key,
+  UserCheck,
+  AlertTriangle,
+  Download,
+  Trash2,
+  RefreshCw,
+  Save,
+} from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 export function PrivacySecuritySettings() {
+  const { toast } = useToast()
   const [settings, setSettings] = useState({
     privacy: {
       publicProfile: true,
@@ -54,8 +73,8 @@ export function PrivacySecuritySettings() {
     },
   ])
 
-  const updateSetting = (category: string, setting: string, value: any) => {
-    setSettings((prev) => ({
+  const updateSetting = (category, setting, value) => {
+    setSettings(prev => ({
       ...prev,
       [category]: {
         ...prev[category],
@@ -64,11 +83,50 @@ export function PrivacySecuritySettings() {
     }))
   }
 
+  const handleSaveSettings = () => {
+    console.log("Saving settings:", settings)
+    toast({
+      title: "Settings Saved",
+      description: "Your privacy and security settings have been successfully updated.",
+    })
+  }
+
+  const handleGenerateApiKey = () => {
+    const newApiKey = {
+      id: `${apiKeys.length + 1}`,
+      name: "New API Key",
+      key: `vtc_live_••••••••••••••••${Math.random().toString(36).substring(2, 15)}`,
+      created: new Date().toISOString().split("T")[0],
+      lastUsed: "Never",
+      permissions: ["read:all"],
+    }
+    setApiKeys([...apiKeys, newApiKey])
+    toast({ title: "API Key Generated", description: "A new API key has been successfully generated." })
+  }
+
+  const handleExportData = (dataType: string) => {
+    toast({
+      title: "Exporting Data",
+      description: `Your ${dataType} data export has been initiated. You will receive a notification when it's ready for download.`,
+    })
+  }
+
+  const handleFeatureClick = (featureName: string) => {
+    toast({
+      title: "Feature Not Implemented",
+      description: `${featureName} is not yet available.`,
+    })
+  }
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h3 className="text-2xl font-bold text-foreground">Privacy & Security</h3>
-        <p className="text-muted-foreground">Manage your VTC's privacy settings and security configuration</p>
+        <h3 className="text-2xl font-bold text-foreground">
+          Privacy & Security
+        </h3>
+        <p className="text-muted-foreground">
+          Manage your VTC's privacy settings and security configuration
+        </p>
       </div>
 
       <Tabs defaultValue="privacy" className="space-y-6">
@@ -88,7 +146,9 @@ export function PrivacySecuritySettings() {
                 </div>
                 <div>
                   <CardTitle>Public Visibility</CardTitle>
-                  <CardDescription>Control what information is publicly visible</CardDescription>
+                  <CardDescription>
+                    Control what information is publicly visible
+                  </CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -96,32 +156,44 @@ export function PrivacySecuritySettings() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Public Profile</Label>
-                  <p className="text-sm text-muted-foreground">Allow your VTC to be discovered publicly</p>
+                  <p className="text-sm text-muted-foreground">
+                    Allow your VTC to be discovered publicly
+                  </p>
                 </div>
                 <Switch
                   checked={settings.privacy.publicProfile}
-                  onCheckedChange={(checked) => updateSetting("privacy", "publicProfile", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("privacy", "publicProfile", checked)
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Show Member List</Label>
-                  <p className="text-sm text-muted-foreground">Display member list on public profile</p>
+                  <p className="text-sm text-muted-foreground">
+                    Display member list on public profile
+                  </p>
                 </div>
                 <Switch
                   checked={settings.privacy.showMemberList}
-                  onCheckedChange={(checked) => updateSetting("privacy", "showMemberList", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("privacy", "showMemberList", checked)
+                  }
                   disabled={!settings.privacy.publicProfile}
                 />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Show Statistics</Label>
-                  <p className="text-sm text-muted-foreground">Display VTC statistics publicly</p>
+                  <p className="text-sm text-muted-foreground">
+                    Display VTC statistics publicly
+                  </p>
                 </div>
                 <Switch
                   checked={settings.privacy.showStatistics}
-                  onCheckedChange={(checked) => updateSetting("privacy", "showStatistics", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("privacy", "showStatistics", checked)
+                  }
                   disabled={!settings.privacy.publicProfile}
                 />
               </div>
@@ -136,7 +208,9 @@ export function PrivacySecuritySettings() {
                 </div>
                 <div>
                   <CardTitle>Member Applications</CardTitle>
-                  <CardDescription>Configure how new members can join</CardDescription>
+                  <CardDescription>
+                    Configure how new members can join
+                  </CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -144,21 +218,29 @@ export function PrivacySecuritySettings() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Allow Applications</Label>
-                  <p className="text-sm text-muted-foreground">Accept new member applications</p>
+                  <p className="text-sm text-muted-foreground">
+                    Accept new member applications
+                  </p>
                 </div>
                 <Switch
                   checked={settings.privacy.allowApplications}
-                  onCheckedChange={(checked) => updateSetting("privacy", "allowApplications", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("privacy", "allowApplications", checked)
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Require Approval</Label>
-                  <p className="text-sm text-muted-foreground">Manually approve all applications</p>
+                  <p className="text-sm text-muted-foreground">
+                    Manually approve all applications
+                  </p>
                 </div>
                 <Switch
                   checked={settings.privacy.requireApproval}
-                  onCheckedChange={(checked) => updateSetting("privacy", "requireApproval", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("privacy", "requireApproval", checked)
+                  }
                   disabled={!settings.privacy.allowApplications}
                 />
               </div>
@@ -170,7 +252,8 @@ export function PrivacySecuritySettings() {
           <Alert className="glass border-yellow-500/20">
             <AlertTriangle className="h-4 w-4 text-yellow-500" />
             <AlertDescription>
-              Security settings affect all VTC members. Changes may require re-authentication.
+              Security settings affect all VTC members. Changes may require
+              re-authentication.
             </AlertDescription>
           </Alert>
 
@@ -182,7 +265,9 @@ export function PrivacySecuritySettings() {
                 </div>
                 <div>
                   <CardTitle>Authentication</CardTitle>
-                  <CardDescription>Configure authentication and access controls</CardDescription>
+                  <CardDescription>
+                    Configure authentication and access controls
+                  </CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -190,11 +275,15 @@ export function PrivacySecuritySettings() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Two-Factor Authentication</Label>
-                  <p className="text-sm text-muted-foreground">Require 2FA for all admin accounts</p>
+                  <p className="text-sm text-muted-foreground">
+                    Require 2FA for all admin accounts
+                  </p>
                 </div>
                 <Switch
                   checked={settings.security.twoFactorAuth}
-                  onCheckedChange={(checked) => updateSetting("security", "twoFactorAuth", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("security", "twoFactorAuth", checked)
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -202,19 +291,31 @@ export function PrivacySecuritySettings() {
                 <Input
                   type="number"
                   value={settings.security.sessionTimeout}
-                  onChange={(e) => updateSetting("security", "sessionTimeout", Number.parseInt(e.target.value))}
+                  onChange={e =>
+                    updateSetting(
+                      "security",
+                      "sessionTimeout",
+                      parseInt(e.target.value)
+                    )
+                  }
                   className="w-32"
                 />
-                <p className="text-sm text-muted-foreground">Automatically log out inactive users</p>
+                <p className="text-sm text-muted-foreground">
+                  Automatically log out inactive users
+                </p>
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label>IP Whitelist</Label>
-                  <p className="text-sm text-muted-foreground">Restrict access to specific IP addresses</p>
+                  <p className="text-sm text-muted-foreground">
+                    Restrict access to specific IP addresses
+                  </p>
                 </div>
                 <Switch
                   checked={settings.security.ipWhitelist}
-                  onCheckedChange={(checked) => updateSetting("security", "ipWhitelist", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("security", "ipWhitelist", checked)
+                  }
                 />
               </div>
             </CardContent>
@@ -228,7 +329,9 @@ export function PrivacySecuritySettings() {
                 </div>
                 <div>
                   <CardTitle>Data Protection</CardTitle>
-                  <CardDescription>Configure data encryption and logging</CardDescription>
+                  <CardDescription>
+                    Configure data encryption and logging
+                  </CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -236,21 +339,29 @@ export function PrivacySecuritySettings() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Audit Logging</Label>
-                  <p className="text-sm text-muted-foreground">Log all administrative actions</p>
+                  <p className="text-sm text-muted-foreground">
+                    Log all administrative actions
+                  </p>
                 </div>
                 <Switch
                   checked={settings.security.auditLogging}
-                  onCheckedChange={(checked) => updateSetting("security", "auditLogging", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("security", "auditLogging", checked)
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Data Encryption</Label>
-                  <p className="text-sm text-muted-foreground">Encrypt sensitive data at rest</p>
+                  <p className="text-sm text-muted-foreground">
+                    Encrypt sensitive data at rest
+                  </p>
                 </div>
                 <Switch
                   checked={settings.security.dataEncryption}
-                  onCheckedChange={(checked) => updateSetting("security", "dataEncryption", checked)}
+                  onCheckedChange={checked =>
+                    updateSetting("security", "dataEncryption", checked)
+                  }
                 />
               </div>
             </CardContent>
@@ -261,39 +372,60 @@ export function PrivacySecuritySettings() {
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-lg font-semibold">API Keys</h4>
-              <p className="text-sm text-muted-foreground">Manage API keys for integrations and applications</p>
+              <p className="text-sm text-muted-foreground">
+                Manage API keys for integrations and applications
+              </p>
             </div>
-            <Button className="gradient-border hover-lift">
+            <Button
+              className="gradient-border hover-lift"
+              onClick={handleGenerateApiKey}
+            >
               <Key className="h-4 w-4 mr-2" />
               Generate New Key
             </Button>
           </div>
 
           <div className="grid gap-4">
-            {apiKeys.map((apiKey) => (
+            {apiKeys.map(apiKey => (
               <Card key={apiKey.id} className="glass hover-lift">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
                       <h4 className="font-medium">{apiKey.name}</h4>
-                      <p className="text-sm text-muted-foreground font-mono">{apiKey.key}</p>
+                      <p className="text-sm text-muted-foreground font-mono">
+                        {apiKey.key}
+                      </p>
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span>Created: {apiKey.created}</span>
                         <span>Last used: {apiKey.lastUsed}</span>
                       </div>
                       <div className="flex flex-wrap gap-1 mt-2">
-                        {apiKey.permissions.map((permission) => (
-                          <Badge key={permission} variant="secondary" className="text-xs">
+                        {apiKey.permissions.map(permission => (
+                          <Badge
+                            key={permission}
+                            variant="secondary"
+                            className="text-xs"
+                          >
                             {permission}
                           </Badge>
                         ))}
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="hover-lift bg-transparent">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="hover-lift bg-transparent"
+                        onClick={() => handleFeatureClick("Refresh Key")}
+                      >
                         <RefreshCw className="h-4 w-4" />
                       </Button>
-                      <Button variant="outline" size="sm" className="hover-lift bg-transparent">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="hover-lift bg-transparent"
+                        onClick={() => handleFeatureClick("Delete Key")}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -308,7 +440,9 @@ export function PrivacySecuritySettings() {
           <Card className="glass hover-lift">
             <CardHeader>
               <CardTitle>Data Retention</CardTitle>
-              <CardDescription>Configure how long different types of data are stored</CardDescription>
+              <CardDescription>
+                Configure how long different types of data are stored
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -317,7 +451,13 @@ export function PrivacySecuritySettings() {
                   <Input
                     type="number"
                     value={settings.dataRetention.jobHistory}
-                    onChange={(e) => updateSetting("dataRetention", "jobHistory", Number.parseInt(e.target.value))}
+                    onChange={e =>
+                      updateSetting(
+                        "dataRetention",
+                        "jobHistory",
+                        parseInt(e.target.value)
+                      )
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -325,7 +465,13 @@ export function PrivacySecuritySettings() {
                   <Input
                     type="number"
                     value={settings.dataRetention.telemetryData}
-                    onChange={(e) => updateSetting("dataRetention", "telemetryData", Number.parseInt(e.target.value))}
+                    onChange={e =>
+                      updateSetting(
+                        "dataRetention",
+                        "telemetryData",
+                        parseInt(e.target.value)
+                      )
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -333,7 +479,13 @@ export function PrivacySecuritySettings() {
                   <Input
                     type="number"
                     value={settings.dataRetention.auditLogs}
-                    onChange={(e) => updateSetting("dataRetention", "auditLogs", Number.parseInt(e.target.value))}
+                    onChange={e =>
+                      updateSetting(
+                        "dataRetention",
+                        "auditLogs",
+                        parseInt(e.target.value)
+                      )
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -341,7 +493,13 @@ export function PrivacySecuritySettings() {
                   <Input
                     type="number"
                     value={settings.dataRetention.userSessions}
-                    onChange={(e) => updateSetting("dataRetention", "userSessions", Number.parseInt(e.target.value))}
+                    onChange={e =>
+                      updateSetting(
+                        "dataRetention",
+                        "userSessions",
+                        parseInt(e.target.value)
+                      )
+                    }
                   />
                 </div>
               </div>
@@ -351,23 +509,41 @@ export function PrivacySecuritySettings() {
           <Card className="glass hover-lift">
             <CardHeader>
               <CardTitle>Data Export</CardTitle>
-              <CardDescription>Export your VTC data for backup or migration</CardDescription>
+              <CardDescription>
+                Export your VTC data for backup or migration
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="hover-lift bg-transparent">
+                <Button
+                  variant="outline"
+                  className="hover-lift bg-transparent"
+                  onClick={() => handleExportData("Member Data")}
+                >
                   <Download className="h-4 w-4 mr-2" />
                   Export Member Data
                 </Button>
-                <Button variant="outline" className="hover-lift bg-transparent">
+                <Button
+                  variant="outline"
+                  className="hover-lift bg-transparent"
+                  onClick={() => handleExportData("Job History")}
+                >
                   <Download className="h-4 w-4 mr-2" />
                   Export Job History
                 </Button>
-                <Button variant="outline" className="hover-lift bg-transparent">
+                <Button
+                  variant="outline"
+                  className="hover-lift bg-transparent"
+                  onClick={() => handleExportData("Statistics")}
+                >
                   <Download className="h-4 w-4 mr-2" />
                   Export Statistics
                 </Button>
-                <Button variant="outline" className="hover-lift bg-transparent">
+                <Button
+                  variant="outline"
+                  className="hover-lift bg-transparent"
+                  onClick={() => handleExportData("All Data")}
+                >
                   <Download className="h-4 w-4 mr-2" />
                   Export All Data
                 </Button>
@@ -378,10 +554,17 @@ export function PrivacySecuritySettings() {
       </Tabs>
 
       <div className="flex justify-end gap-2">
-        <Button variant="outline" className="hover-lift bg-transparent">
+        <Button
+          variant="outline"
+          className="hover-lift bg-transparent"
+          onClick={() => handleFeatureClick("Cancel")}
+        >
           Cancel
         </Button>
-        <Button className="gradient-border hover-lift">
+        <Button
+          className="gradient-border hover-lift"
+          onClick={handleSaveSettings}
+        >
           <Save className="h-4 w-4 mr-2" />
           Save Settings
         </Button>

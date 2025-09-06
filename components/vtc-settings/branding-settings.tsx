@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import { Palette, Eye, Monitor } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 const brandingSettingsSchema = z.object({
   primaryColor: z.string(),
@@ -49,6 +50,7 @@ const layoutOptions = [
 ]
 
 export function BrandingSettings({ vtcId }: BrandingSettingsProps) {
+  const { toast } = useToast()
   const [previewMode, setPreviewMode] = useState<"light" | "dark">("dark")
 
   const form = useForm<BrandingSettingsForm>({
@@ -71,9 +73,25 @@ export function BrandingSettings({ vtcId }: BrandingSettingsProps) {
   const onSubmit = async (data: BrandingSettingsForm) => {
     try {
       console.log("[v0] Updating branding settings:", data)
+      toast({
+        title: "Branding Settings Saved",
+        description: "Your VTC's branding has been successfully updated.",
+      })
     } catch (error) {
       console.error("[v0] Error updating branding:", error)
+      toast({
+        title: "Error",
+        description: "Failed to save branding settings. Please try again.",
+        variant: "destructive",
+      })
     }
+  }
+
+  const handleFeatureClick = (featureName: string) => {
+    toast({
+      title: "Feature Not Implemented",
+      description: `${featureName} is not yet available in preview.`,
+    })
   }
 
   return (
@@ -191,7 +209,7 @@ export function BrandingSettings({ vtcId }: BrandingSettingsProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {fontOptions.map((font) => (
+                        {fontOptions.map(font => (
                           <SelectItem key={font.value} value={font.value}>
                             {font.label}
                           </SelectItem>
@@ -224,7 +242,7 @@ export function BrandingSettings({ vtcId }: BrandingSettingsProps) {
                         max={100}
                         step={5}
                         value={[field.value]}
-                        onValueChange={(value) => field.onChange(value[0])}
+                        onValueChange={value => field.onChange(value[0])}
                         className="w-full"
                       />
                     </FormControl>
@@ -281,7 +299,7 @@ export function BrandingSettings({ vtcId }: BrandingSettingsProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {layoutOptions.map((layout) => (
+                        {layoutOptions.map(layout => (
                           <SelectItem key={layout.value} value={layout.value}>
                             {layout.label}
                           </SelectItem>

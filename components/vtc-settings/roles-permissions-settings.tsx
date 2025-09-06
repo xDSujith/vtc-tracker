@@ -1,12 +1,25 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import {
   Dialog,
   DialogContent,
@@ -16,6 +29,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Shield, Plus, Edit, Trash2, Users, Settings } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface Role {
   id: string
@@ -50,7 +64,7 @@ const defaultRoles: Role[] = [
     id: "owner",
     name: "Owner",
     color: "#DC2626",
-    permissions: availablePermissions.map((p) => p.id),
+    permissions: availablePermissions.map(p => p.id),
     memberCount: 1,
     isDefault: true,
   },
@@ -73,7 +87,12 @@ const defaultRoles: Role[] = [
     id: "dispatcher",
     name: "Dispatcher",
     color: "#CA8A04",
-    permissions: ["create_jobs", "assign_jobs", "manage_events", "create_events"],
+    permissions: [
+      "create_jobs",
+      "assign_jobs",
+      "manage_events",
+      "create_events",
+    ],
     memberCount: 5,
   },
   {
@@ -86,7 +105,10 @@ const defaultRoles: Role[] = [
   },
 ]
 
-export function RolesPermissionsSettings({ vtcId }: RolesPermissionsSettingsProps) {
+export function RolesPermissionsSettings({
+  vtcId,
+}: RolesPermissionsSettingsProps) {
+  const { toast } = useToast()
   const [roles, setRoles] = useState<Role[]>(defaultRoles)
   const [selectedRole, setSelectedRole] = useState<Role | null>(null)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -101,14 +123,21 @@ export function RolesPermissionsSettings({ vtcId }: RolesPermissionsSettingsProp
       acc[permission.category].push(permission)
       return acc
     },
-    {} as Record<string, typeof availablePermissions>,
+    {} as Record<string, typeof availablePermissions>
   )
 
   const handleSaveRole = () => {
     if (selectedRole) {
-      console.log("[v0] Saving role:", selectedRole)
-      setSelectedRole(null)
+      // Update existing role
+      setRoles(
+        roles.map(r => (r.id === selectedRole.id ? selectedRole : r))
+      )
+      toast({
+        title: "Role Updated",
+        description: `The ${selectedRole.name} role has been updated.`,
+      })
     } else {
+      // Create new role
       const newRole: Role = {
         id: Date.now().toString(),
         name: newRoleName,
@@ -117,21 +146,36 @@ export function RolesPermissionsSettings({ vtcId }: RolesPermissionsSettingsProp
         memberCount: 0,
       }
       setRoles([...roles, newRole])
-      setIsCreateDialogOpen(false)
-      setNewRoleName("")
-      setNewRoleColor("#8B5CF6")
+      toast({ title: "Role Created", description: `The ${newRoleName} role has been created.` })
     }
+    setSelectedRole(null)
+    setIsCreateDialogOpen(false)
+    setNewRoleName("")
+    setNewRoleColor("#8B5CF6")
   }
 
   const handleDeleteRole = (roleId: string) => {
-    setRoles(roles.filter((role) => role.id !== roleId))
+    setRoles(roles.filter(role => role.id !== roleId))
+    toast({
+      title: "Role Deleted",
+      description: "The role has been successfully deleted.",
+    })
+  }
+
+  const handleFeatureClick = (featureName: string) => {
+    toast({
+      title: "Feature Not Implemented",
+      description: `${featureName} is not yet available.`,
+    })
   }
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">Roles & Permissions</h2>
-        <p className="text-muted-foreground">Configure user roles and access control for your VTC.</p>
+        <p className="text-muted-foreground">
+          Configure user roles and access control for your VTC.
+        </p>
       </div>
 
       {/* Roles Overview */}
@@ -143,11 +187,16 @@ export function RolesPermissionsSettings({ vtcId }: RolesPermissionsSettingsProp
                 <Shield className="h-5 w-5" />
                 Roles Overview
               </CardTitle>
-              <CardDescription>Manage roles and their permissions within your VTC.</CardDescription>
+              <CardDescription>
+                Manage roles and their permissions within your VTC.
+              </CardDescription>
             </div>
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <Dialog
+              open={isCreateDialogOpen}
+              onOpenChange={setIsCreateDialogOpen}
+            >
               <DialogTrigger asChild>
-                <Button>
+                <Button onClick={() => setIsCreateDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create Role
                 </Button>
@@ -155,17 +204,34 @@ export function RolesPermissionsSettings({ vtcId }: RolesPermissionsSettingsProp
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Create New Role</DialogTitle>
-                  <DialogDescription>Define a new role with specific permissions for your VTC.</DialogDescription>
+                  <DialogDescription>
+                    Define a new role with specific permissions for your VTC.
+                  </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4">
-                  <Input placeholder="Role name" value={newRoleName} onChange={(e) => setNewRoleName(e.target.value)} />
+                <div className="space-y-4 py-4">
                   <Input
-                    type="color"
-                    defaultValue="#8B5CF6"
-                    value={newRoleColor}
-                    onChange={(e) => setNewRoleColor(e.target.value)}
+                    placeholder="Role name"
+                    value={newRoleName}
+                    onChange={e => setNewRoleName(e.target.value)}
                   />
-                  <Button onClick={handleSaveRole}>Create Role</Button>
+                  <div className="flex items-center gap-2">
+                    <Label>Role Color</Label>
+                    <Input
+                      type="color"
+                      value={newRoleColor}
+                      onChange={e => setNewRoleColor(e.target.value)}
+                      className="w-16"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsCreateDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSaveRole}>Create Role</Button>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
@@ -182,13 +248,18 @@ export function RolesPermissionsSettings({ vtcId }: RolesPermissionsSettingsProp
               </TableRow>
             </TableHeader>
             <TableBody>
-              {roles.map((role) => (
+              {roles.map(role => (
                 <TableRow key={role.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: role.color }} />
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: role.color }}
+                      />
                       <span className="font-medium">{role.name}</span>
-                      {role.isDefault && <Badge variant="secondary">Default</Badge>}
+                      {role.isDefault && (
+                        <Badge variant="secondary">Default</Badge>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -198,15 +269,25 @@ export function RolesPermissionsSettings({ vtcId }: RolesPermissionsSettingsProp
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{role.permissions.length} permissions</Badge>
+                    <Badge variant="outline">
+                      {role.permissions.length} permissions
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => setSelectedRole(role)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedRole(role)}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                       {!role.isDefault && (
-                        <Button variant="ghost" size="sm" onClick={() => handleDeleteRole(role.id)}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteRole(role.id)}
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       )}
@@ -227,32 +308,43 @@ export function RolesPermissionsSettings({ vtcId }: RolesPermissionsSettingsProp
             <CardDescription>Configure permissions for this role.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {Object.entries(groupedPermissions).map(([category, permissions]) => (
-              <div key={category} className="space-y-3">
-                <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">{category}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {permissions.map((permission) => (
-                    <div key={permission.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <div className="font-medium">{permission.name}</div>
+            {Object.entries(groupedPermissions).map(
+              ([category, permissions]) => (
+                <div key={category} className="space-y-3">
+                  <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+                    {category}
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {permissions.map(permission => (
+                      <div
+                        key={permission.id}
+                        className="flex items-center justify-between p-3 border rounded-lg"
+                      >
+                        <div>
+                          <div className="font-medium">{permission.name}</div>
+                        </div>
+                        <Switch
+                          checked={selectedRole.permissions.includes(
+                            permission.id
+                          )}
+                          onCheckedChange={checked => {
+                            const updatedPermissions = checked
+                              ? [...selectedRole.permissions, permission.id]
+                              : selectedRole.permissions.filter(
+                                  p => p !== permission.id
+                                )
+                            setSelectedRole({
+                              ...selectedRole,
+                              permissions: updatedPermissions,
+                            })
+                          }}
+                        />
                       </div>
-                      <Switch
-                        checked={selectedRole.permissions.includes(permission.id)}
-                        onCheckedChange={(checked) => {
-                          const updatedPermissions = checked
-                            ? [...selectedRole.permissions, permission.id]
-                            : selectedRole.permissions.filter((p) => p !== permission.id)
-                          setSelectedRole({
-                            ...selectedRole,
-                            permissions: updatedPermissions,
-                          })
-                        }}
-                      />
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            )}
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setSelectedRole(null)}>
                 Cancel
@@ -273,11 +365,18 @@ export function RolesPermissionsSettings({ vtcId }: RolesPermissionsSettingsProp
           <div className="flex items-center justify-between p-4 border rounded-lg">
             <div>
               <div className="font-medium">Discord Role Sync</div>
-              <div className="text-sm text-muted-foreground">Automatically assign Discord roles based on VTC roles</div>
+              <div className="text-sm text-muted-foreground">
+                Automatically assign Discord roles based on VTC roles
+              </div>
             </div>
-            <Switch />
+            <Switch
+              onClick={() => handleFeatureClick("Discord Role Sync")}
+            />
           </div>
-          <Button variant="outline">
+          <Button
+            variant="outline"
+            onClick={() => handleFeatureClick("Configure Discord Mapping")}
+          >
             <Settings className="h-4 w-4 mr-2" />
             Configure Discord Mapping
           </Button>
