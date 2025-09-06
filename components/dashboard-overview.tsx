@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -28,79 +28,35 @@ export function DashboardOverview({ vtcData }: DashboardOverviewProps) {
       title: "Total Members",
       value: stats.totalMembers || 0,
       icon: Users,
-      change: "+12%",
+      change: "+0%",
       changeType: "positive",
     },
     {
       title: "Active Jobs",
-      value: "23",
+      value: "0",
       icon: Package,
-      change: "+5%",
+      change: "+0%",
       changeType: "positive",
     },
     {
       title: "Fleet Size",
-      value: "18",
+      value: "0",
       icon: Truck,
-      change: "+2",
+      change: "+0",
       changeType: "positive",
     },
     {
       title: "Monthly Revenue",
       value: `$${(stats.totalRevenue || 0).toLocaleString()}`,
       icon: DollarSign,
-      change: "+18%",
+      change: "+0%",
       changeType: "positive",
     },
   ]
 
-  const recentJobs = [
-    {
-      id: "JOB-001",
-      title: "Electronics to Amsterdam",
-      driver: "RoadWarrior",
-      status: "in-progress",
-      progress: 65,
-      eta: "2h 30m",
-    },
-    {
-      id: "JOB-002",
-      title: "Machinery to Prague",
-      driver: "Unassigned",
-      status: "available",
-      progress: 0,
-      eta: "N/A",
-    },
-    {
-      id: "JOB-003",
-      title: "Food Delivery to Vienna",
-      driver: "SpeedDemon",
-      status: "completed",
-      progress: 100,
-      eta: "Delivered",
-    },
-  ]
+  const recentJobs = []
 
-  const onlineDrivers = [
-    {
-      name: "RoadWarrior",
-      status: "driving",
-      location: "Berlin → Amsterdam",
-      truck: "Scania R730",
-    },
-    {
-      name: "SpeedDemon",
-      status: "resting",
-      location: "Vienna Service Station",
-      truck: "Volvo FH16",
-    },
-    {
-      name: "TruckMaster",
-      status: "loading",
-      location: "Munich Depot",
-      truck: "MAN TGX",
-    },
-  ]
+  const onlineDrivers = []
 
   return (
     <div className="space-y-6">
@@ -115,7 +71,7 @@ export function DashboardOverview({ vtcData }: DashboardOverviewProps) {
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{stat.value}</div>
               <p className="text-xs text-muted-foreground">
-                <span className={stat.changeType === "positive" ? "text-green-500" : "text-red-500"}>
+                <span className={stat.changeType === 'positive' ? 'text-green-500' : 'text-red-500'}>
                   {stat.change}
                 </span>{" "}
                 from last month
@@ -136,30 +92,36 @@ export function DashboardOverview({ vtcData }: DashboardOverviewProps) {
             <CardDescription>Latest job assignments and progress</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {recentJobs.map((job) => (
-              <div key={job.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">{job.title}</span>
-                    <Badge
-                      variant={
-                        job.status === "completed" ? "default" : job.status === "in-progress" ? "secondary" : "outline"
-                      }
-                      className="text-xs"
-                    >
-                      {job.status === "in-progress" && <Clock className="h-3 w-3 mr-1" />}
-                      {job.status === "completed" && <CheckCircle className="h-3 w-3 mr-1" />}
-                      {job.status === "available" && <AlertTriangle className="h-3 w-3 mr-1" />}
-                      {job.status}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Driver: {job.driver} • ETA: {job.eta}
-                  </p>
-                  {job.status === "in-progress" && <Progress value={job.progress} className="h-2 w-32" />}
-                </div>
+            {recentJobs.length === 0 ? (
+              <div className="text-center py-10">
+                <p className="text-muted-foreground">No recent jobs to display.</p>
               </div>
-            ))}
+            ) : (
+              recentJobs.map((job) => (
+                <div key={job.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">{job.title}</span>
+                      <Badge
+                        variant={
+                          job.status === "completed" ? "default" : job.status === "in-progress" ? "secondary" : "outline"
+                        }
+                        className="text-xs"
+                      >
+                        {job.status === "in-progress" && <Clock className="h-3 w-3 mr-1" />}
+                        {job.status === "completed" && <CheckCircle className="h-3 w-3 mr-1" />}
+                        {job.status === "available" && <AlertTriangle className="h-3 w-3 mr-1" />}
+                        {job.status}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Driver: {job.driver} • ETA: {job.eta}
+                    </p>
+                    {job.status === "in-progress" && <Progress value={job.progress} className="h-2 w-32" />}
+                  </div>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
 
@@ -173,28 +135,34 @@ export function DashboardOverview({ vtcData }: DashboardOverviewProps) {
             <CardDescription>Currently active drivers and their status</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {onlineDrivers.map((driver, index) => (
-              <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center">
-                    <span className="text-xs font-medium">{driver.name[0]}</span>
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">{driver.name}</p>
-                    <p className="text-xs text-muted-foreground">{driver.truck}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <Badge variant={driver.status === "driving" ? "default" : "secondary"} className="text-xs mb-1">
-                    {driver.status}
-                  </Badge>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    {driver.location}
-                  </p>
-                </div>
+            {onlineDrivers.length === 0 ? (
+              <div className="text-center py-10">
+                <p className="text-muted-foreground">No drivers are currently online.</p>
               </div>
-            ))}
+            ) : (
+              onlineDrivers.map((driver, index) => (
+                <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-border">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center">
+                      <span className="text-xs font-medium">{driver.name[0]}</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm">{driver.name}</p>
+                      <p className="text-xs text-muted-foreground">{driver.truck}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <Badge variant={driver.status === 'driving' ? 'default' : 'secondary'} className="text-xs mb-1">
+                      {driver.status}
+                    </Badge>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {driver.location}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
       </div>
@@ -213,26 +181,26 @@ export function DashboardOverview({ vtcData }: DashboardOverviewProps) {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">On-Time Delivery</span>
-                <span className="text-sm font-medium">94%</span>
+                <span className="text-sm font-medium">0%</span>
               </div>
-              <Progress value={94} className="h-2" />
+              <Progress value={0} className="h-2" />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Driver Satisfaction</span>
                 <span className="text-sm font-medium flex items-center gap-1">
                   <Star className="h-3 w-3 fill-current" />
-                  {stats.averageRating || 4.7}
+                  {stats.averageRating || 0}
                 </span>
               </div>
-              <Progress value={(stats.averageRating || 4.7) * 20} className="h-2" />
+              <Progress value={(stats.averageRating || 0) * 20} className="h-2" />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Fleet Utilization</span>
-                <span className="text-sm font-medium">87%</span>
+                <span className="text-sm font-medium">0%</span>
               </div>
-              <Progress value={87} className="h-2" />
+              <Progress value={0} className="h-2" />
             </div>
           </div>
         </CardContent>

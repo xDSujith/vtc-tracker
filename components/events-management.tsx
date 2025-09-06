@@ -40,59 +40,7 @@ export function EventsManagement() {
   const [activeView, setActiveView] = useState("upcoming")
   const [searchQuery, setSearchQuery] = useState("")
 
-  const mockEvents = [
-    {
-      id: "1",
-      title: "Weekly Convoy - Berlin to Prague",
-      description: "Join us for our weekly convoy from Berlin to Prague. All skill levels welcome!",
-      date: "2024-01-15",
-      time: "19:00",
-      type: "convoy",
-      status: "upcoming",
-      participants: 12,
-      maxParticipants: 20,
-      route: "Berlin → Prague",
-      distance: "347 km",
-      organizer: {
-        name: "TruckMaster2024",
-        avatar: "/driver-avatar.jpg",
-      },
-      requirements: ["ETS2", "DLC: Going East"],
-    },
-    {
-      id: "2",
-      title: "VTC Training Session",
-      description: "New member training session covering company rules and convoy procedures.",
-      date: "2024-01-18",
-      time: "20:00",
-      type: "training",
-      status: "upcoming",
-      participants: 8,
-      maxParticipants: 15,
-      route: "Virtual Meeting",
-      organizer: {
-        name: "ConvoyLeader",
-        avatar: "/diverse-user-avatars.png",
-      },
-    },
-    {
-      id: "3",
-      title: "Special Event - Christmas Convoy",
-      description: "Annual Christmas convoy with special cargo and festive decorations!",
-      date: "2024-01-12",
-      time: "18:30",
-      type: "special",
-      status: "completed",
-      participants: 25,
-      maxParticipants: 25,
-      route: "Calais → Edinburgh",
-      distance: "1,247 km",
-      organizer: {
-        name: "EventManager",
-        avatar: "/diverse-user-avatars.png",
-      },
-    },
-  ]
+  const mockEvents = []
 
   const getEventTypeColor = (type: string) => {
     switch (type) {
