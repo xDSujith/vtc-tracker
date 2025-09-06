@@ -29,7 +29,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Shield, Plus, Edit, Trash2, Users, Settings } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui/use-toast"
+import { Label } from "@/components/ui/label"
 
 interface Role {
   id: string
@@ -38,10 +39,6 @@ interface Role {
   permissions: string[]
   memberCount: number
   isDefault?: boolean
-}
-
-interface RolesPermissionsSettingsProps {
-  vtcId: string
 }
 
 const availablePermissions = [
@@ -105,9 +102,7 @@ const defaultRoles: Role[] = [
   },
 ]
 
-export function RolesPermissionsSettings({
-  vtcId,
-}: RolesPermissionsSettingsProps) {
+export function RolesPermissionsSettings() {
   const { toast } = useToast()
   const [roles, setRoles] = useState<Role[]>(defaultRoles)
   const [selectedRole, setSelectedRole] = useState<Role | null>(null)
