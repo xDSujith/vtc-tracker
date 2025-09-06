@@ -1,14 +1,14 @@
 
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { EventsManagement } from '../components/events-management';
+import { EventsManagement } from './events-management';
 
 describe('EventsManagement', () => {
   it('renders the component with event data', () => {
     render(<EventsManagement />);
     
-    expect(screen.getByText('Euro Truck Simulator 2 Convoy')).toBeInTheDocument();
-    expect(screen.getByText('American Truck Simulator Convoy')).toBeInTheDocument();
-    expect(screen.getByText('ProMods Convoy')).toBeInTheDocument();
+    expect(screen.getByText('Weekly Convoy - Berlin to Prague')).toBeInTheDocument();
+    expect(screen.getByText('VTC Training Session')).toBeInTheDocument();
+    expect(screen.getByText('Special Event - Christmas Convoy')).toBeInTheDocument();
   });
 });
