@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -16,9 +18,19 @@ function SocialButton({ icon, children }) {
 }
 
 export default function RegisterPage() {
+  const router = useRouter()
+
+  useEffect(() => {
+    // Mock authentication - in production this would check real auth
+    const mockUser = null;
+    if (mockUser) {
+      router.push('/')
+    }
+  }, [router])
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
-      <Card className="mx-auto max-w-sm">
+      <Card className="mx-auto max-w-lg">
         <CardHeader>
           <CardTitle className="text-xl">Sign Up</CardTitle>
           <CardDescription>Enter your information to create an account</CardDescription>

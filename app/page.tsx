@@ -1,6 +1,7 @@
-"use client"
+'use client'
 
 import { useState, useEffect } from "react"
+import { useRouter } from 'next/navigation'
 import {
   Sidebar,
   SidebarContent,
@@ -28,16 +29,20 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview")
   const [user, setUser] = useState(null)
   const [vtcData, setVtcData] = useState(null)
+  const router = useRouter()
 
   useEffect(() => {
     // Mock authentication - in production this would check real auth
     const mockUser = null;
-    setUser(mockUser)
-
-    // Mock VTC data
-    const mockVTC = null;
-    setVtcData(mockVTC)
-  }, [])
+    if (!mockUser) {
+      router.push('/login')
+    } else {
+      setUser(mockUser)
+      // Mock VTC data
+      const mockVTC = null;
+      setVtcData(mockVTC)
+    }
+  }, [router])
 
   const sidebarItems = [
     { id: "overview", label: "Overview", icon: BarChart3 },
@@ -48,6 +53,10 @@ export default function Dashboard() {
     { id: "events", label: "Events", icon: Calendar },
     { id: "settings", label: "Settings", icon: Settings },
   ]
+
+  if (!user) {
+    return null // Or a loading spinner
+  }
 
   return (
     <SidebarProvider>
