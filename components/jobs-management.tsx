@@ -24,56 +24,7 @@ export function JobsManagement() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
-  const jobs = [
-    {
-      id: "JOB-001",
-      title: "Electronics Delivery to Amsterdam",
-      cargo: "Electronics - 15,000 kg",
-      route: "Berlin → Amsterdam",
-      distance: "580 km",
-      payment: "$2,500",
-      deadline: "2024-12-10 18:00",
-      status: "in-progress",
-      driver: "RoadWarrior",
-      createdAt: "2024-12-08",
-    },
-    {
-      id: "JOB-002",
-      title: "Machinery Transport to Prague",
-      cargo: "Heavy Machinery - 35,000 kg",
-      route: "Munich → Prague",
-      distance: "385 km",
-      payment: "$4,200",
-      deadline: "2024-12-12 12:00",
-      status: "available",
-      driver: null,
-      createdAt: "2024-12-08",
-    },
-    {
-      id: "JOB-003",
-      title: "Food Delivery to Vienna",
-      cargo: "Perishable Goods - 12,000 kg",
-      route: "Frankfurt → Vienna",
-      distance: "680 km",
-      payment: "$3,100",
-      deadline: "2024-12-09 08:00",
-      status: "completed",
-      driver: "SpeedDemon",
-      createdAt: "2024-12-07",
-    },
-    {
-      id: "JOB-004",
-      title: "Construction Materials to Hamburg",
-      cargo: "Steel Beams - 28,000 kg",
-      route: "Dortmund → Hamburg",
-      distance: "350 km",
-      payment: "$2,800",
-      deadline: "2024-12-11 16:00",
-      status: "assigned",
-      driver: "TruckMaster",
-      createdAt: "2024-12-08",
-    },
-  ]
+  const jobs = []
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -234,65 +185,78 @@ export function JobsManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredJobs.map((job) => (
-                <TableRow key={job.id}>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium">{job.title}</p>
-                      <p className="text-xs text-muted-foreground">ID: {job.id}</p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-sm">{job.route}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{job.distance}</p>
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-sm">{job.cargo}</p>
-                  </TableCell>
-                  <TableCell>
-                    {job.driver ? (
-                      <div className="flex items-center gap-2">
-                        <User className="h-3 w-3" />
-                        <span className="text-sm">{job.driver}</span>
-                      </div>
-                    ) : (
-                      <Badge variant="outline" className="text-xs">
-                        Unassigned
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="h-3 w-3 text-green-500" />
-                      <span className="font-medium">{job.payment}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-sm">{new Date(job.deadline).toLocaleDateString()}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={getStatusBadge(job.status)}>{job.status}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        Edit
-                      </Button>
-                      {job.status === "available" && (
-                        <Button size="sm" className="bg-accent text-accent-foreground">
-                          Assign
-                        </Button>
-                      )}
-                    </div>
+              {filteredJobs.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-12">
+                    <p className="text-lg font-medium text-muted-foreground">
+                      No active jobs found.
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Create a new job to get started.
+                    </p>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                filteredJobs.map((job) => (
+                  <TableRow key={job.id}>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{job.title}</p>
+                        <p className="text-xs text-muted-foreground">ID: {job.id}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-sm">{job.route}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{job.distance}</p>
+                    </TableCell>
+                    <TableCell>
+                      <p className="text-sm">{job.cargo}</p>
+                    </TableCell>
+                    <TableCell>
+                      {job.driver ? (
+                        <div className="flex items-center gap-2">
+                          <User className="h-3 w-3" />
+                          <span className="text-sm">{job.driver}</span>
+                        </div>
+                      ) : (
+                        <Badge variant="outline" className="text-xs">
+                          Unassigned
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <DollarSign className="h-3 w-3 text-green-500" />
+                        <span className="font-medium">{job.payment}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-sm">{new Date(job.deadline).toLocaleDateString()}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={getStatusBadge(job.status)}>{job.status}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm">
+                          Edit
+                        </Button>
+                        {job.status === "available" && (
+                          <Button size="sm" className="bg-accent text-accent-foreground">
+                            Assign
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

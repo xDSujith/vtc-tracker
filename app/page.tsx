@@ -31,26 +31,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Mock authentication - in production this would check real auth
-    const mockUser = {
-      id: "550e8400-e29b-41d4-a716-446655440001",
-      username: "TruckMaster2024",
-      role: "OWNER",
-      avatar: "/diverse-user-avatars.png",
-    }
+    const mockUser = null;
     setUser(mockUser)
 
     // Mock VTC data
-    const mockVTC = {
-      name: "European Express Logistics",
-      tag: "EEL",
-      stats: {
-        totalMembers: 25,
-        totalJobs: 1250,
-        totalDistance: 125000,
-        totalRevenue: 2500000,
-        averageRating: 4.7,
-      },
-    }
+    const mockVTC = null;
     setVtcData(mockVTC)
   }, [])
 
