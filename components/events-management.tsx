@@ -267,14 +267,10 @@ export function EventsManagement() {
             <p className="text-muted-foreground text-center mb-4">
               {searchQuery ? "Try adjusting your search terms" : "Create your first event to get started"}
             </p>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="gradient-border">
+            <Button className="gradient-border">
                   <Plus className="h-4 w-4 mr-2" />
                   Create Event
                 </Button>
-              </DialogTrigger>
-            </Dialog>
           </CardContent>
         </Card>
       )}
