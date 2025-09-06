@@ -8,3 +8,197 @@
 2025-09-06 06:28:22.534 UTC [7732] LOG:  background worker "logical replication launcher" (PID 7739) exited with exit code 1
 2025-09-06 06:28:22.534 UTC [7734] LOG:  shutting down
 2025-09-06 06:28:22.548 UTC [7732] LOG:  database system is shut down
+2025-09-06 06:28:54.199 UTC [7981] LOG:  starting PostgreSQL 13.15 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 12.3.0, 64-bit
+2025-09-06 06:28:54.199 UTC [7981] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-09-06 06:28:54.203 UTC [7981] LOG:  listening on Unix socket "/home/user/vtc-tracker/.pgdata/.s.PGSQL.5432"
+2025-09-06 06:28:54.208 UTC [7985] LOG:  database system was shut down at 2025-09-06 06:28:22 UTC
+2025-09-06 06:28:54.213 UTC [7981] LOG:  database system is ready to accept connections
+2025-09-06 06:28:54.401 UTC [8006] ERROR:  relation "vtcs" does not exist
+2025-09-06 06:28:54.401 UTC [8006] STATEMENT:  CREATE TABLE IF NOT EXISTS users (
+	    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	    discord_id VARCHAR(20) UNIQUE NOT NULL,
+	    username VARCHAR(50) NOT NULL,
+	    email VARCHAR(255) UNIQUE NOT NULL,
+	    avatar TEXT,
+	    role VARCHAR(20) NOT NULL DEFAULT 'MEMBER',
+	    vtc_id UUID REFERENCES vtcs(id) ON DELETE SET NULL,
+	    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+	    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+	    is_active BOOLEAN DEFAULT true,
+	    last_seen TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+	    preferences JSONB DEFAULT '{}'::jsonb
+	);
+2025-09-06 06:28:54.418 UTC [8006] ERROR:  relation "users" does not exist
+2025-09-06 06:28:54.418 UTC [8006] STATEMENT:  CREATE TABLE IF NOT EXISTS drivers (
+	    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	    vtc_id UUID NOT NULL REFERENCES vtcs(id) ON DELETE CASCADE,
+	    employee_id VARCHAR(20) NOT NULL,
+	    hired_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+	    is_active BOOLEAN DEFAULT true,
+	    stats JSONB DEFAULT '{}'::jsonb,
+	    current_truck UUID REFERENCES trucks(id) ON DELETE SET NULL,
+	    current_job UUID REFERENCES jobs(id) ON DELETE SET NULL,
+	    location JSONB DEFAULT '{}'::jsonb,
+	    status VARCHAR(20) DEFAULT 'OFFLINE',
+	    UNIQUE(vtc_id, employee_id)
+	);
+2025-09-06 06:28:54.426 UTC [8006] ERROR:  relation "users" does not exist
+2025-09-06 06:28:54.426 UTC [8006] STATEMENT:  CREATE TABLE IF NOT EXISTS trucks (
+	    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	    vtc_id UUID NOT NULL REFERENCES vtcs(id) ON DELETE CASCADE,
+	    brand VARCHAR(50) NOT NULL,
+	    model VARCHAR(50) NOT NULL,
+	    license_plate VARCHAR(20) NOT NULL,
+	    owned_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	    assigned_to UUID REFERENCES drivers(id) ON DELETE SET NULL,
+	    purchase_date DATE NOT NULL,
+	    mileage INTEGER DEFAULT 0,
+	    condition INTEGER DEFAULT 100,
+	    location JSONB DEFAULT '{}'::jsonb,
+	    is_active BOOLEAN DEFAULT true,
+	    specs JSONB DEFAULT '{}'::jsonb,
+	    UNIQUE(vtc_id, license_plate)
+	);
+2025-09-06 06:28:54.432 UTC [8006] ERROR:  relation "users" does not exist
+2025-09-06 06:28:54.432 UTC [8006] STATEMENT:  CREATE TABLE IF NOT EXISTS jobs (
+	    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	    vtc_id UUID NOT NULL REFERENCES vtcs(id) ON DELETE CASCADE,
+	    created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	    assigned_to UUID REFERENCES drivers(id) ON DELETE SET NULL,
+	    title VARCHAR(200) NOT NULL,
+	    description TEXT,
+	    cargo JSONB NOT NULL,
+	    route JSONB NOT NULL,
+	    payment DECIMAL(10,2) NOT NULL,
+	    deadline TIMESTAMP WITH TIME ZONE NOT NULL,
+	    status VARCHAR(20) DEFAULT 'AVAILABLE',
+	    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+	    started_at TIMESTAMP WITH TIME ZONE,
+	    completed_at TIMESTAMP WITH TIME ZONE,
+	    rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+	    feedback TEXT
+	);
+2025-09-06 06:28:54.437 UTC [8006] ERROR:  relation "drivers" does not exist
+2025-09-06 06:28:54.437 UTC [8006] STATEMENT:  CREATE TABLE IF NOT EXISTS telemetry_data (
+	    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	    driver_id UUID NOT NULL REFERENCES drivers(id) ON DELETE CASCADE,
+	    timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+	    game VARCHAR(10) NOT NULL,
+	    position JSONB NOT NULL,
+	    speed DECIMAL(5,2) NOT NULL,
+	    fuel DECIMAL(5,2) NOT NULL,
+	    damage DECIMAL(5,2) NOT NULL,
+	    is_online BOOLEAN DEFAULT true,
+	    job_id UUID REFERENCES jobs(id) ON DELETE SET NULL,
+	    truck_id UUID REFERENCES trucks(id) ON DELETE SET NULL
+	);
+2025-09-06 06:28:54.442 UTC [8006] ERROR:  relation "users" does not exist
+2025-09-06 06:28:54.442 UTC [8006] STATEMENT:  CREATE TABLE IF NOT EXISTS events (
+	    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	    vtc_id UUID NOT NULL REFERENCES vtcs(id) ON DELETE CASCADE,
+	    title VARCHAR(200) NOT NULL,
+	    description TEXT,
+	    start_date TIMESTAMP WITH TIME ZONE NOT NULL,
+	    end_date TIMESTAMP WITH TIME ZONE NOT NULL,
+	    location JSONB,
+	    participants UUID[] DEFAULT '{}',
+	    max_participants INTEGER,
+	    created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+	);
+2025-09-06 06:28:54.448 UTC [8006] ERROR:  relation "drivers" does not exist
+2025-09-06 06:28:54.448 UTC [8006] STATEMENT:  CREATE TABLE IF NOT EXISTS fines (
+	    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	    driver_id UUID NOT NULL REFERENCES drivers(id) ON DELETE CASCADE,
+	    vtc_id UUID NOT NULL REFERENCES vtcs(id) ON DELETE CASCADE,
+	    amount DECIMAL(10,2) NOT NULL,
+	    reason TEXT NOT NULL,
+	    issued_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	    issued_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+	    is_paid BOOLEAN DEFAULT false,
+	    paid_at TIMESTAMP WITH TIME ZONE
+	);
+2025-09-06 06:28:54.456 UTC [8006] ERROR:  relation "users" does not exist
+2025-09-06 06:28:54.456 UTC [8006] STATEMENT:  CREATE TABLE IF NOT EXISTS applications (
+	    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	    vtc_id UUID NOT NULL REFERENCES vtcs(id) ON DELETE CASCADE,
+	    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	    message TEXT NOT NULL,
+	    status VARCHAR(20) DEFAULT 'PENDING',
+	    submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+	    reviewed_by UUID REFERENCES users(id) ON DELETE SET NULL,
+	    reviewed_at TIMESTAMP WITH TIME ZONE,
+	    feedback TEXT,
+	    UNIQUE(vtc_id, user_id)
+	);
+2025-09-06 06:28:54.457 UTC [8006] ERROR:  relation "users" does not exist
+2025-09-06 06:28:54.457 UTC [8006] STATEMENT:  CREATE INDEX IF NOT EXISTS idx_users_discord_id ON users(discord_id);
+2025-09-06 06:28:54.457 UTC [8006] ERROR:  relation "users" does not exist
+2025-09-06 06:28:54.457 UTC [8006] STATEMENT:  CREATE INDEX IF NOT EXISTS idx_users_vtc_id ON users(vtc_id);
+2025-09-06 06:28:54.457 UTC [8006] ERROR:  relation "drivers" does not exist
+2025-09-06 06:28:54.457 UTC [8006] STATEMENT:  CREATE INDEX IF NOT EXISTS idx_drivers_user_id ON drivers(user_id);
+2025-09-06 06:28:54.457 UTC [8006] ERROR:  relation "drivers" does not exist
+2025-09-06 06:28:54.457 UTC [8006] STATEMENT:  CREATE INDEX IF NOT EXISTS idx_drivers_vtc_id ON drivers(vtc_id);
+2025-09-06 06:28:54.457 UTC [8006] ERROR:  relation "jobs" does not exist
+2025-09-06 06:28:54.457 UTC [8006] STATEMENT:  CREATE INDEX IF NOT EXISTS idx_jobs_vtc_id ON jobs(vtc_id);
+2025-09-06 06:28:54.457 UTC [8006] ERROR:  relation "jobs" does not exist
+2025-09-06 06:28:54.457 UTC [8006] STATEMENT:  CREATE INDEX IF NOT EXISTS idx_jobs_assigned_to ON jobs(assigned_to);
+2025-09-06 06:28:54.457 UTC [8006] ERROR:  relation "telemetry_data" does not exist
+2025-09-06 06:28:54.457 UTC [8006] STATEMENT:  CREATE INDEX IF NOT EXISTS idx_telemetry_driver_id ON telemetry_data(driver_id);
+2025-09-06 06:28:54.457 UTC [8006] ERROR:  relation "telemetry_data" does not exist
+2025-09-06 06:28:54.457 UTC [8006] STATEMENT:  CREATE INDEX IF NOT EXISTS idx_telemetry_timestamp ON telemetry_data(timestamp);
+2025-09-06 06:28:54.457 UTC [8006] ERROR:  relation "events" does not exist
+2025-09-06 06:28:54.457 UTC [8006] STATEMENT:  CREATE INDEX IF NOT EXISTS idx_events_vtc_id ON events(vtc_id);
+2025-09-06 06:28:54.457 UTC [8006] ERROR:  relation "fines" does not exist
+2025-09-06 06:28:54.457 UTC [8006] STATEMENT:  CREATE INDEX IF NOT EXISTS idx_fines_driver_id ON fines(driver_id);
+2025-09-06 06:28:54.458 UTC [8006] ERROR:  relation "applications" does not exist
+2025-09-06 06:28:54.458 UTC [8006] STATEMENT:  CREATE INDEX IF NOT EXISTS idx_applications_vtc_id ON applications(vtc_id);
+2025-09-06 06:28:54.464 UTC [8008] ERROR:  relation "public.audit_logs" does not exist
+2025-09-06 06:28:54.464 UTC [8008] STATEMENT:  TRUNCATE TABLE
+	    "public"."audit_logs",
+	    "public"."job_legs",
+	    "public"."jobs",
+	    "public"."telemetry_data", 
+	    "public"."user_roles",
+	    "public"."users",
+	    "public"."vehicles",
+	    "public"."roles",
+	    "public"."drivers", 
+	    "public"."trucks" 
+	RESTART IDENTITY CASCADE;
+2025-09-06 06:28:54.466 UTC [8008] ERROR:  relation "public.roles" does not exist at character 13
+2025-09-06 06:28:54.466 UTC [8008] QUERY:  INSERT INTO "public"."roles" (vtc_id, name, is_default, permissions) VALUES
+	    (vtc_id_var, 'Owner', true, ARRAY['*']::text[]),
+	    (vtc_id_var, 'Driver', true, ARRAY['read:jobs', 'create:jobs']::text[])
+	    RETURNING id
+2025-09-06 06:28:54.466 UTC [8008] CONTEXT:  PL/pgSQL function inline_code_block line 11 at SQL statement
+2025-09-06 06:28:54.466 UTC [8008] STATEMENT:  DO $$
+	DECLARE
+	    vtc_id_var UUID;
+	    owner_role_id_var UUID;
+	    admin_user_id_var UUID;
+	BEGIN
+	    -- Select the ID of the primary VTC
+	    SELECT id INTO vtc_id_var FROM "public"."vtcs" WHERE name = 'European Express Logistics';
+	
+	    -- Re-insert the essential default roles
+	    INSERT INTO "public"."roles" (vtc_id, name, is_default, permissions) VALUES
+	    (vtc_id_var, 'Owner', true, ARRAY['*']::text[]),
+	    (vtc_id_var, 'Driver', true, ARRAY['read:jobs', 'create:jobs']::text[])
+	    RETURNING id INTO owner_role_id_var; -- Get the ID of the 'Owner' role we just created
+	
+	    -- Re-create the main admin user
+	    INSERT INTO "public"."users" (vtc_id, username, email, password_hash, is_vtc_owner)
+	    VALUES (vtc_id_var, 'admin', 'admin@vtc.com', '$2b$12$L/DxH8xL4s2rK5z4s5A6QO2z4i8E9o2v3J1c7B6c5D4e3F2a1G0b2', true)
+	    RETURNING id INTO admin_user_id_var;
+	
+	    -- Assign the 'Owner' role to the new admin user
+	    INSERT INTO "public"."user_roles" (user_id, role_id) VALUES (admin_user_id_var, owner_role_id_var);
+	END $$;
+2025-09-06 06:28:54.466 UTC [8008] WARNING:  there is no transaction in progress
+2025-09-06 06:28:54.468 UTC [7981] LOG:  received fast shutdown request
+2025-09-06 06:28:54.470 UTC [7981] LOG:  aborting any active transactions
+2025-09-06 06:28:54.472 UTC [7981] LOG:  background worker "logical replication launcher" (PID 7991) exited with exit code 1
+2025-09-06 06:28:54.472 UTC [7986] LOG:  shutting down
+2025-09-06 06:28:54.497 UTC [7981] LOG:  database system is shut down
